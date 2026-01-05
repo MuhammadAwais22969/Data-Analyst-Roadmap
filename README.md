@@ -434,3 +434,5 @@ Made with ❤️ for aspiring Data Analysts
 [⬆ Back to Top](#-student-data-analyst-mastery-path)
 
 </div>
+#   D a t a - A n a l y s t - R o a d m a p  
+ 

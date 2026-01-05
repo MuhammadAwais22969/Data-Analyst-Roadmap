@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analyst Mastery Path</title>
+    
+    <!-- React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: {
+                            900: '#1c1917',
+                            800: '#292524',
+                            700: '#44403c',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        },
+                        orange: {
+                            500: '#f97316',
+                            600: '#ea580c',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'rotate-cube': 'rotateCube 20s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+                        },
+                        rotateCube: {
+                            '0%': { transform: 'rotateX(0deg) rotateY(0deg)' },
+                            '100%': { transform: 'rotateX(360deg) rotateY(360deg)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #1c1917 100%);
+            min-height: 100vh;
+            color: #f5f5f4;
+        }
+        
+        /* Star Field Background */
+        .star-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(41, 37, 36, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.1);
+        }
+        
+        .glass-card {
+            background: rgba(41, 37, 36, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+        
+        /* 3D Cube */
+        .cube-container {
+            perspective: 800px;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s linear infinite;
+        }
+        
+        .cube-face {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(234, 88, 12, 0.2));
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 40px;
+            color: #fbbf24;
+        }
+        
+        .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(75px); }
+        .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(75px); }
+        .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(75px); }
+        .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(75px); }
+        .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(75px); }
+        .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(75px); }
+        
+        @keyframes rotateCube {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        
+        /* Accordion Animation */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+        }
+        
+        .accordion-content.expanded {
+            max-height: 2000px;
+            opacity: 1;
+            transition: max-height 0.6s ease-in, opacity 0.4s ease-in;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(28, 25, 23, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #fbbf24, #ea580c);
+            border-radius: 4px;
+        }
+        
+        /* Checkbox Styling */
+        .custom-checkbox {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            border-radius: 6px;
+            background: rgba(41, 37, 36, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .custom-checkbox:checked {
+            background: linear-gradient(135deg, #fbbf24, #ea580c);
+            border-color: #fbbf24;
+        }
+        
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #1c1917;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        /* Glow effect for completed cards */
+        .completed-glow {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4),
+                        inset 0 0 20px rgba(16, 185, 129, 0.1);
+            border-color: #10b981 !important;
+        }
+        
+        /* Progress Ring */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        /* Link hover effect */
+        .resource-link {
+            transition: all 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            transform: translateX(5px);
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Roadmap Data
+        const ROADMAP_DATA = [
+            {
+                month: 1,
+                title: "Foundations",
+                subtitle: "Excel & Statistics",
+                description: "The starting point. Master data organization and basic analysis math.",
+                topics: [
+                    { id: '1-1', label: "Excel: VLOOKUP & Pivot Tables" },
+                    { id: '1-2', label: "Excel: Data Cleaning & Power Query" },
+                    { id: '1-3', label: "Stats: Mean, Median, Mode & Std Dev" },
+                    { id: '1-4', label: "Stats: Distributions & p-values" },
+                ],
+                resources: [
+                    { title: "WSCube Tech (Excel) [Urdu/Hindi]", url: "https://www.youtube.com/@wscubetechjodhpur" },
+                    { title: "Codanics (Stats) [Urdu/Hindi]", url: "https://www.youtube.com/@Codanics" },
+                    { title: "Excel Easy [English]", url: "https://www.excel-easy.com/" },
+                ]
+            },
+            {
+                month: 2,
+                title: "SQL Mastery",
+                subtitle: "Database Querying",
+                description: "Learn how to talk to databases and pull specific information.",
+                topics: [
+                    { id: '2-1', label: "SQL: SELECT, FROM, WHERE" },
+                    { id: '2-2', label: "SQL: Joins (Inner, Left, Right)" },
+                    { id: '2-3', label: "SQL: GROUP BY & Aggregations" },
+                    { id: '2-4', label: "SQL: CTEs & Subqueries" },
+                ],
+                resources: [
+                    { title: "CodeWithHarry (SQL) [Hindi]", url: "https://www.youtube.com/@CodeWithHarry" },
+                    { title: "Technical Suneja [Hindi]", url: "https://www.youtube.com/@TechnicalSuneja" },
+                    { title: "SQLZoo Practice [English]", url: "https://sqlzoo.net/" },
+                ]
+            },
+            {
+                month: 3,
+                title: "Visual Storytelling",
+                subtitle: "BI Tools (Power BI/Tableau)",
+                description: "Turn your data into beautiful, interactive charts and maps.",
+                topics: [
+                    { id: '3-1', label: "Connecting Data Sources" },
+                    { id: '3-2', label: "Creating Interactive Dashboards" },
+                    { id: '3-3', label: "DAX / Calculated Fields" },
+                    { id: '3-4', label: "Color Theory & UI Design" },
+                ],
+                resources: [
+                    { title: "Skillsiya (Power BI) [Hindi]", url: "https://www.youtube.com/@Skillsiya" },
+                    { title: "Codanics (Tableau) [Urdu]", url: "https://www.youtube.com/@Codanics" },
+                    { title: "Storytelling with Data [English]", url: "https://www.storytellingwithdata.com/" },
+                ]
+            },
+            {
+                month: 4,
+                title: "Python for Data",
+                subtitle: "Programming & Pandas",
+                description: "Use code to automate cleaning and analysis for huge datasets.",
+                topics: [
+                    { id: '4-1', label: "Python: Loops & Functions" },
+                    { id: '4-2', label: "Pandas: DataFrames" },
+                    { id: '4-3', label: "Data Cleaning with NumPy" },
+                    { id: '4-4', label: "Matplotlib & Seaborn" },
+                ],
+                resources: [
+                    { title: "Codebasics (Python) [Hindi]", url: "https://www.youtube.com/@codebasics" },
+                    { title: "CodeWithHarry (Python) [Hindi]", url: "https://www.youtube.com/@CodeWithHarry" },
+                    { title: "Kaggle Python Course [English]", url: "https://www.kaggle.com/learn/python" },
+                ]
+            },
+            {
+                month: 5,
+                title: "Portfolio Building",
+                subtitle: "Real World Projects",
+                description: "Build your own project to show future employers what you can do.",
+                topics: [
+                    { id: '5-1', label: "Find a Dataset on Kaggle" },
+                    { id: '5-2', label: "End-to-End Data Cleaning" },
+                    { id: '5-3', label: "Build Final Dashboard" },
+                    { id: '5-4', label: "Upload Code to GitHub" },
+                ],
+                resources: [
+                    { title: "Codebasics Projects [Hindi]", url: "https://www.youtube.com/@codebasics" },
+                    { title: "Kaggle Datasets [English]", url: "https://www.kaggle.com/datasets" },
+                ]
+            },
+            {
+                month: 6,
+                title: "Interview Prep",
+                subtitle: "Resume & Job Search",
+                description: "Final polish for your resume and practicing interview questions.",
+                topics: [
+                    { id: '6-1', label: "Advanced SQL (Window Functions)" },
+                    { id: '6-2', label: "KPIs & Business Metrics" },
+                    { id: '6-3', label: "Optimizing LinkedIn Profile" },
+                    { id: '6-4', label: "Behavioral Mock Interviews" },
+                ],
+                resources: [
+                    { title: "WSCube Tech (Careers) [Hindi]", url: "https://www.youtube.com/@wscubetechjodhpur" },
+                    { title: "Data Analyst Resume Guide [English]", url: "https://www.freecodecamp.org/news/tag/resume/" },
+                ]
+            }
+        ];
+        
+        // Star Field Component
+        const StarField = () => {
+            const stars = Array.from({ length: 100 }, (_, i) => ({
+                id: i,
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+                size: Math.random() * 3 + 1,
+                delay: Math.random() * 3,
+            }));
+            
+            return (
+                <div className="star-field">
+                    {stars.map(star => (
+                        <div
+                            key={star.id}
+                            className="star"
+                            style={{
+                                left: `${star.left}%`,
+                                top: `${star.top}%`,
+                                width: `${star.size}px`,
+                                height: `${star.size}px`,
+                                animationDelay: `${star.delay}s`,
+                            }}
+                        />
+                    ))}
+                </div>
+            );
+        };
+        
+        // 3D Cube Component
+        const Cube3D = () => {
+            return (
+                <div className="cube-container">
+                    <div className="cube">
+                        <div className="cube-face">📊</div>
+                        <div className="cube-face">📈</div>
+                        <div className="cube-face">💻</div>
+                        <div className="cube-face">🔍</div>
+                        <div className="cube-face">📉</div>
+                        <div className="cube-face">🎯</div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Circular Progress Component
+        const CircularProgress = ({ percentage, size = 120, strokeWidth = 10 }) => {
+            const radius = (size - strokeWidth) / 2;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            return (
+                <div className="relative">
+                    <svg width={size} height={size} className="progress-ring">
+                        <circle
+                            cx={size / 2}
+                            cy={size / 2}
+                            r={radius}
+                            stroke="rgba(41, 37, 36, 0.8)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                        />
+                        <circle
+                            cx={size / 2}
+                            cy={size / 2}
+                            r={radius}
+                            stroke="url(#gradient)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                            className="progress-ring-circle"
+                        />
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#fbbf24" />
+                                <stop offset="100%" stopColor="#ea580c" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-white">
+                            {Math.round(percentage)}%
+                        </span>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Linear Progress Component
+        const LinearProgress = ({ percentage }) => {
+            return (
+                <div className="w-full h-2 bg-stone-700 rounded-full overflow-hidden">
+                    <div
+                        className="h-full rounded-full transition-all duration-500 ease-out"
+                        style={{
+                            width: `${percentage}%`,
+                            background: percentage === 100 
+                                ? 'linear-gradient(90deg, #10b981, #059669)'
+                                : 'linear-gradient(90deg, #fbbf24, #ea580c)',
+                        }}
+                    />
+                </div>
+            );
+        };
+        
+        // Icon Component
+        const Icon = ({ name, className }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, [name]);
+            
+            return <i data-lucide={name} className={className}></i>;
+        };
+        
+        // Tilt Card Component
+        const TiltCard = ({ children, className, completed = false }) => {
+            const cardRef = useRef(null);
+            const [transform, setTransform] = useState('');
+            
+            const handleMouseMove = (e) => {
+                if (!cardRef.current) return;
+                
+                const rect = cardRef.current.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 60;
+                const rotateY = (centerX - x) / 60;
+                
+                setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
+            };
+            
+            const handleMouseLeave = () => {
+                setTransform('');
+            };
+            
+            return (
+                <div
+                    ref={cardRef}
+                    className={`glass-card rounded-2xl overflow-hidden transition-transform duration-300 ease-out ${completed ? 'completed-glow' : ''} ${className}`}
+                    style={{ transform }}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    {children}
+                </div>
+            );
+        };
+        
+        // Month Card Component
+        const MonthCard = ({ data, expanded, onToggle, checkedItems, onCheckItem }) => {
+            const totalTopics = data.topics.length;
+            const checkedTopics = data.topics.filter(t => checkedItems[t.id]).length;
+            const percentage = (checkedTopics / totalTopics) * 100;
+            const isComplete = percentage === 100;
+            
+            const handleHeaderClick = (e) => {
+                // Prevent collapse when clicking on interactive elements
+                if (e.target.closest('input') || e.target.closest('a') || e.target.closest('button')) {
+                    return;
+                }
+                onToggle(data.month);
+            };
+            
+            const handleCheckItem = (e, itemId) => {
+                e.stopPropagation();
+                onCheckItem(itemId);
+            };
+            
+            return (
+                <TiltCard completed={isComplete} className="mb-6">
+                    <div
+                        className="p-6 cursor-pointer select-none"
+                        onClick={handleHeaderClick}
+                    >
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-2xl font-bold text-stone-900">
+                                    {data.month}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                        {data.title}
+                                        {isComplete && <Icon name="check-circle" className="w-5 h-5 text-emerald-400" />}
+                                    </h3>
+                                    <p className="text-amber-400 text-sm">{data.subtitle}</p>
+                                </div>
+                            </div>
+                            <Icon 
+                                name={expanded ? "chevron-up" : "chevron-down"} 
+                                className="w-6 h-6 text-amber-400 transition-transform duration-300"
+                            />
+                        </div>
+                        
+                        <p className="text-stone-300 mb-4">{data.description}</p>
+                        
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1">
+                                <LinearProgress percentage={percentage} />
+                            </div>
+                            <span className="text-sm font-semibold text-amber-400 min-w-[50px] text-right">
+                                {Math.round(percentage)}%
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div className={`accordion-content ${expanded ? 'expanded' : ''}`}>
+                        <div className="px-6 pb-6 border-t border-stone-700/50">
+                            <div className="pt-4">
+                                <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                                    <Icon name="list-checks" className="w-5 h-5 text-amber-400" />
+                                    Topics to Cover
+                                </h4>
+                                <div className="space-y-3">
+                                    {data.topics.map(topic => (
+                                        <label
+                                            key={topic.id}
+                                            className="flex items-start gap-3 p-3 rounded-lg hover:bg-stone-700/30 transition-colors cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="custom-checkbox mt-0.5 flex-shrink-0"
+                                                checked={checkedItems[topic.id] || false}
+                                                onChange={(e) => handleCheckItem(e, topic.id)}
+                                            />
+                                            <span className={`text-stone-200 ${checkedItems[topic.id] ? 'line-through opacity-60' : ''}`}>
+                                                {topic.label}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {data.resources.length > 0 && (
+                                <div className="pt-6 mt-6 border-t border-stone-700/50">
+                                    <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                                        <Icon name="link" className="w-5 h-5 text-amber-400" />
+                                        Resources
+                                    </h4>
+                                    <ul className="space-y-2">
+                                        {data.resources.map((resource, index) => (
+                                            <li key={index}>
+                                                <a
+                                                    href={resource.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="resource-link flex items-center gap-2 text-stone-300 hover:text-amber-400"
+                                                >
+                                                    <Icon name="external-link" className="w-4 h-4 flex-shrink-0" />
+                                                    {resource.title}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </TiltCard>
+            );
+        };
+        
+        // Main App Component
+        const App = () => {
+            const [checkedItems, setCheckedItems] = useState({});
+            const [expandedMonth, setExpandedMonth] = useState(1);
+            
+            // Load progress from localStorage
+            useEffect(() => {
+                try {
+                    const saved = localStorage.getItem('roadmapProgress');
+                    if (saved) {
+                        setCheckedItems(JSON.parse(saved));
+                    }
+                } catch (error) {
+                    console.error('Failed to load progress:', error);
+                }
+            }, []);
+            
+            // Save progress to localStorage
+            useEffect(() => {
+                try {
+                    localStorage.setItem('roadmapProgress', JSON.stringify(checkedItems));
+                } catch (error) {
+                    console.error('Failed to save progress:', error);
+                }
+            }, [checkedItems]);
+            
+            // Initialize Lucide icons
+            useEffect(() => {
+                lucide.createIcons();
+            }, [checkedItems, expandedMonth]);
+            
+            const handleCheckItem = (itemId) => {
+                setCheckedItems(prev => ({
+                    ...prev,
+                    [itemId]: !prev[itemId]
+                }));
+            };
+            
+            // Calculate total progress
+            const totalTopics = ROADMAP_DATA.reduce((acc, month) => acc + month.topics.length, 0);
+            const totalChecked = Object.values(checkedItems).filter(Boolean).length;
+            const totalPercentage = (totalChecked / totalTopics) * 100;
+            
+            return (
+                <div className="min-h-screen relative">
+                    <StarField />
+                    
+                    {/* Hero Section */}
+                    <header className="relative z-10 glass py-8 px-4 mb-8">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                                <div className="text-center lg:text-left flex-1">
+                                    <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600 bg-clip-text text-transparent animate-float">
+                                        Data Analyst Mastery Path
+                                    </h1>
+                                    <p className="text-stone-300 text-lg mb-6 max-w-xl">
+                                        Your 6-month journey from beginner to professional data analyst. 
+                                        Track your progress and master the essential skills.
+                                    </p>
+                                    <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                                        <div className="flex items-center gap-2 text-emerald-400">
+                                            <Icon name="check-circle-2" className="w-5 h-5" />
+                                            <span>{totalChecked} topics completed</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-amber-400">
+                                            <Icon name="target" className="w-5 h-5" />
+                                            <span>{totalTopics - totalChecked} remaining</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-8 animate-float-delayed">
+                                    <CircularProgress percentage={totalPercentage} size={150} strokeWidth={12} />
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    {/* Main Content */}
+                    <main className="relative z-10 max-w-4xl mx-auto px-4 pb-16">
+                        {ROADMAP_DATA.map(month => (
+                            <MonthCard
+                                key={month.month}
+                                data={month}
+                                expanded={expandedMonth === month.month}
+                                onToggle={setExpandedMonth}
+                                checkedItems={checkedItems}
+                                onCheckItem={handleCheckItem}
+                            />
+                        ))}
+                    </main>
+                    
+                    {/* Footer */}
+                    <footer className="relative z-10 glass py-6 px-4 mt-8">
+                        <div className="max-w-6xl mx-auto text-center text-stone-400">
+                            <p className="flex items-center justify-center gap-2">
+                                <Icon name="rocket" className="w-4 h-4" />
+                                Your journey to data mastery starts here. Keep pushing! 🚀
+                            </p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+        
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

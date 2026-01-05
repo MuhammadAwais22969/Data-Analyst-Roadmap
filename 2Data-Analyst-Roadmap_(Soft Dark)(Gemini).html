@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Data Analyst Roadmap</title>
+    <title>Student Data Analyst Roadmap - Eye Care Edition</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React and Babel for running the app in the browser -->
@@ -14,17 +14,37 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        /* Eye-friendly color palette */
+        :root {
+            --bg-color: #1a1c1e; /* Soft Charcoal */
+            --card-bg: #242729; /* Deep Slate */
+            --accent-color: #e9c46a; /* Soft Amber */
+            --text-main: #e2e8f0; /* Off-white */
+            --text-muted: #94a3b8; /* Soft Gray */
+            --success: #81b29a; /* Sage Green */
+        }
+
         body { 
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a; 
-            color: #f1f5f9; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
         }
+
         .roadmap-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
-        .custom-checkbox:checked {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+
+        /* Custom scrollbar for better visibility without strain */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -34,7 +54,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Custom component to render Lucide icons
         const Icon = ({ name, className }) => {
             useEffect(() => {
                 if (window.lucide) {
@@ -157,7 +176,6 @@
             const [progress, setProgress] = useState({});
             const [activeMonth, setActiveMonth] = useState('month-1');
 
-            // Load saved progress on startup
             useEffect(() => {
                 const savedProgress = localStorage.getItem('da_student_roadmap');
                 if (savedProgress) setProgress(JSON.parse(savedProgress));
@@ -180,17 +198,17 @@
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-white mb-2">Student Data Analyst Roadmap</h1>
-                            <p className="text-slate-400">Master the data world in 6 months, step by step.</p>
+                            <h1 className="text-3xl font-bold text-slate-100 mb-2">Student Roadmap</h1>
+                            <p className="text-slate-400">Master Data Analysis without eye strain.</p>
                         </div>
-                        <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex items-center gap-4">
+                        <div className="bg-[#2d3135] p-4 rounded-2xl border border-slate-700/50 flex items-center gap-4">
                             <div className="text-right">
-                                <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider">Overall Progress</span>
-                                <span className="text-2xl font-bold text-blue-500">{calculateProgress()}%</span>
+                                <span className="block text-xs text-slate-400 uppercase font-bold tracking-wider">Progress</span>
+                                <span className="text-2xl font-bold text-[#e9c46a]">{calculateProgress()}%</span>
                             </div>
                             <div className="w-16 h-16 rounded-full border-4 border-slate-700 relative">
                                 <div 
-                                    className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-blue-500 transition-all duration-500"
+                                    className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-[#e9c46a] transition-all duration-700"
                                     style={{ clipPath: `inset(${100 - calculateProgress()}% 0 0 0)` }}
                                 ></div>
                             </div>
@@ -205,22 +223,22 @@
                             const isMonthDone = completedCount === month.topics.length;
 
                             return (
-                                <div key={month.id} className={`roadmap-card rounded-2xl border ${isOpen ? 'bg-slate-800 border-blue-500/50 shadow-xl' : 'bg-slate-800/40 border-slate-700'} overflow-hidden`}>
+                                <div key={month.id} className={`roadmap-card rounded-2xl border ${isOpen ? 'bg-[#242729] border-[#e9c46a]/30 shadow-xl' : 'bg-[#242729]/40 border-slate-800'} overflow-hidden`}>
                                     <div 
-                                        className="p-5 flex items-center justify-between cursor-pointer hover:bg-slate-700/20"
+                                        className="p-5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors"
                                         onClick={() => setActiveMonth(isOpen ? null : month.id)}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className={`p-3 rounded-xl ${isMonthDone ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/10 text-blue-500'}`}>
+                                            <div className={`p-3 rounded-xl ${isMonthDone ? 'bg-[#81b29a]/20 text-[#81b29a]' : 'bg-[#e9c46a]/10 text-[#e9c46a]'}`}>
                                                 <Icon name={isMonthDone ? 'check-circle' : month.icon} className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-lg text-white">{month.title}</h3>
-                                                <p className="text-sm text-slate-400">{month.subtitle}</p>
+                                                <h3 className={`font-bold text-lg ${isMonthDone ? 'text-[#81b29a]' : 'text-slate-100'}`}>{month.title}</h3>
+                                                <p className="text-sm text-slate-400 font-medium">{month.subtitle}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-xs font-mono px-2 py-1 bg-slate-900 rounded-md text-slate-400">
+                                            <span className="text-[10px] font-bold px-2 py-1 bg-black/20 rounded-md text-slate-400 uppercase tracking-widest">
                                                 {completedCount}/{month.topics.length}
                                             </span>
                                             <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} className="w-5 h-5 text-slate-500" />
@@ -228,19 +246,19 @@
                                     </div>
 
                                     {isOpen && (
-                                        <div className="px-5 pb-6 border-t border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <p className="text-sm text-slate-300 mt-4 mb-6 italic leading-relaxed">
-                                                "{month.description}"
+                                        <div className="px-5 pb-6 border-t border-slate-800/50 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <p className="text-sm text-slate-300 mt-4 mb-6 leading-relaxed opacity-80">
+                                                {month.description}
                                             </p>
 
                                             <div className="space-y-2 mb-8">
                                                 {month.topics.map(topic => (
-                                                    <label key={topic.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-900/50 border border-slate-700/30 cursor-pointer hover:bg-slate-900 transition-colors">
+                                                    <label key={topic.id} className="flex items-center gap-3 p-3 rounded-lg bg-black/10 border border-white/5 cursor-pointer hover:bg-black/20 transition-colors">
                                                         <input 
                                                             type="checkbox" 
                                                             checked={!!progress[topic.id]} 
                                                             onChange={() => handleToggle(topic.id)}
-                                                            className="w-5 h-5 rounded border-slate-600 bg-transparent text-blue-500 focus:ring-blue-500"
+                                                            className="w-5 h-5 rounded border-slate-600 bg-transparent text-[#e9c46a] focus:ring-[#e9c46a]"
                                                         />
                                                         <span className={`text-sm ${progress[topic.id] ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
                                                             {topic.label}
@@ -251,12 +269,12 @@
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                 {month.resources.map((res, i) => (
-                                                    <a key={i} href={res.url} target="_blank" rel="noopener noreferrer" className="group p-3 rounded-xl bg-slate-700/30 border border-slate-600 hover:border-blue-500 transition-all flex items-center justify-between">
+                                                    <a key={i} href={res.url} target="_blank" rel="noopener noreferrer" className="group p-3 rounded-xl bg-black/20 border border-white/5 hover:border-[#e9c46a]/50 transition-all flex items-center justify-between">
                                                         <div className="flex flex-col">
-                                                            <span className="text-xs font-bold text-blue-400 uppercase tracking-tighter mb-1">{res.lang}</span>
-                                                            <span className="text-sm text-slate-200 group-hover:text-white line-clamp-1">{res.name}</span>
+                                                            <span className="text-[10px] font-bold text-[#e9c46a] uppercase tracking-tighter mb-1 opacity-70">{res.lang}</span>
+                                                            <span className="text-sm text-slate-300 group-hover:text-white line-clamp-1">{res.name}</span>
                                                         </div>
-                                                        <Icon name="external-link" className="w-4 h-4 text-slate-500 group-hover:text-blue-400" />
+                                                        <Icon name="external-link" className="w-4 h-4 text-slate-600 group-hover:text-[#e9c46a]" />
                                                     </a>
                                                 ))}
                                             </div>
